@@ -1,0 +1,31 @@
+function createCalendarEvent() {
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var calendar = CalendarApp.getCalendarById('c_qdaaeshe5gc7r9pcdr1mrdei2s@group.calendar.google.com');
+ 
+  var startRow = 2;  // First row of data to process - 2 exempts my header row
+  var numRows = sheet.getLastRow();   // Number of rows to process
+  var numColumns = sheet.getLastColumn();
+ 
+  var dataRange = sheet.getRange(startRow, 1, numRows-1, numColumns);
+  var data = dataRange.getValues();
+ 
+  var complete = "Done";
+ 
+  for (var i = 0; i < data.length; ++i) {
+    var row = data[i];
+    var name = row[21]; //Item Name
+    var site = row[1]
+    var date = new Date(row[9]);  //renewal date
+    var rDate = new Date(row[10]); //remind date
+    var eventID = row[22]; //event marked Done
+   
+    if (eventID != complete) {
+      var currentCell = sheet.getRange(startRow + i, numColumns);
+      calendar.createEvent(name, date, rDate, {
+        description: site
+      });
+    
+      currentCell.setValue(complete);
+    }
+  }
+}
